@@ -1,0 +1,80 @@
+# deploy init
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: postgres-dev
+labels:
+  app: postgres-dev
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: postgres-dev
+  template:
+    metadata:
+      labels:
+        app: postgres-dev
+      spec:
+        containers:
+          - name: postgres-dev
+        image: postgres:latest
+        ports:
+          - containerPort: 5432
+        env:
+          - name: POSTGRES_DB
+            value: shoppingapi
+          - name: POSTGRES_USER
+            value: postgres
+          - name: POSTGRES_PASSWORD
+            value: System20
+# end
+---
+# cluster init
+apiVersion: rbac.authorization.k8s.io/v1beta1
+kind: ClusterRoleBinding
+metadata:
+  name: loja-admin
+  roleRef:
+    apiGroup: rbac.authorization.k8s.io
+      kind: ClusterRole
+      name: cluster-admin
+    subjects:
+      - kind: ServiceAccount
+        name: loja-admin
+        namespace: kube-system
+# end
+---
+# service init
+apiVersion: apps/v1
+kind: Service
+metadata:
+  name: postgres-service
+  labels:
+    run: postgres-service
+spec:
+  ports:
+    - port: 5432
+      targetPort: 5432
+      protocol: TCP
+  selector:
+    app: postgres-service
+# end
+---
+# config-map init
+apiVersion: apps/v1
+kind: ConfigMap
+metadata:
+  name: shoppingapi-configmap
+  data:
+    database_url: jdbc:postgresql://postgres:5432/shoppingapi
+    database_user: postgres
+    database_password: System20
+# end
+---
+# service account init
+apiVersion: apps/v1
+kind: ServiceAccount
+metadata:
+  name: loja-admin
+  namespace: kube-system
+# end
