@@ -1,10 +1,11 @@
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
-    `java-library`
+
     id("org.springframework.boot")
     id("io.spring.dependency-management") version "1.0.12.RELEASE"
     kotlin("jvm")
+    jacoco
 }
 
 group = "titanic.domain"
@@ -29,6 +30,13 @@ dependencies {
 }
 
 apply(plugin = "io.spring.dependency-management")
+apply(plugin = "jacoco")
+
+tasks.test {
+    useJUnitPlatform()
+
+    finalizedBy(":domain:jacocoTestReport")
+}
 
 the<io.spring.gradle.dependencymanagement.dsl.DependencyManagementExtension>().apply {
     imports {

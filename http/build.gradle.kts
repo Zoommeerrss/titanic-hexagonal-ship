@@ -10,7 +10,7 @@ plugins {
     id("io.spring.dependency-management") version "1.0.12.RELEASE"
     kotlin("jvm")
     kotlin("plugin.spring")
-    kotlin("kapt")
+    jacoco
 }
 
 group = "titanic.app"
@@ -33,7 +33,6 @@ dependencies {
     }
     implementation("org.springframework.boot:spring-boot-starter-undertow")
     implementation("org.springframework.boot:spring-boot-starter-actuator")
-    kapt("org.springframework.boot:spring-boot-configuration-processor")
 
     implementation("org.hibernate.validator:hibernate-validator")
     implementation("javax.validation:validation-api")
@@ -48,10 +47,16 @@ dependencies {
 }
 
 apply(plugin = "io.spring.dependency-management")
+apply(plugin = "jacoco")
+
+tasks.test {
+    useJUnitPlatform()
+
+    finalizedBy(":http:jacocoTestReport")
+}
 
 the<io.spring.gradle.dependencymanagement.dsl.DependencyManagementExtension>().apply {
     imports {
         mavenBom(org.springframework.boot.gradle.plugin.SpringBootPlugin.BOM_COORDINATES)
     }
 }
-
