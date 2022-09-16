@@ -58,17 +58,12 @@ allprojects {
 
         useJUnitPlatform()
 
-        dependsOn(":datastore:pitest")
-        dependsOn(":core:pitest")
-        dependsOn(":domain:pitest")
-        dependsOn(":http:pitest")
-
         extensions.configure(JacocoTaskExtension::class) {
             setDestinationFile(layout.buildDirectory.file("jacoco/test.exec").get().asFile)
             classDumpDir = layout.buildDirectory.dir("jacoco/classpathdumps").get().asFile
         }
 
-        finalizedBy( ":moveReports", ":pitestReportAggregate", ":jacocoTestReport")
+        finalizedBy( ":moveReports", ":jacocoTestReport")
     }
 
     tasks.jacocoTestReport {
@@ -85,16 +80,24 @@ allprojects {
             csv.required.set(false)
         }
 
-        dependsOn(tasks.test)
+        dependsOn(tasks.build)
     }
 
-    tasks.create<Copy>("moveReports") {
+    tasks.register<Copy>("moveReports") {
+
+        dependsOn(tasks.check)
+
+        dependsOn(":datastore:pitest")
+        dependsOn(":core:pitest")
+        dependsOn(":domain:pitest")
+        dependsOn(":http:pitest")
 
         from(project(":http").buildDir) {
             include("reports/pitest/**")
         }
         into("${rootProject.projectDir}/build/")
 
+        finalizedBy(":pitestReportAggregate", ":inspectClassesForKotlinIC")
     }
 
     tasks.withType<KotlinCompile>() {
@@ -165,4 +168,42 @@ tasks.create<JacocoReport>("jacocoRootReport") {
     }
 
     dependsOn(tasks.jacocoTestReport)
+}
+
+tasks.withType<JacocoCoverageVerification> {
+    violationRules {
+        rule {
+            limit {
+                minimum = BigDecimal(0.62)
+            }
+        }
+    }
+
+    afterEvaluate {
+        classDirectories.setFrom(files(classDirectories.files.map {
+            fileTree(it).apply {
+                exclude("com/titanic/hexagonal/core/**")
+                exclude("com/titanic/hexagonal/datastore/component/port/**")
+                exclude("com/titanic/hexagonal/datastore/configuration/**")
+                exclude("com/titanic/hexagonal/datastore/dataprovider/**")
+                exclude("com/titanic/hexagonal/domain/**")
+                exclude("com/titanic/hexagonal/app/**")
+            }
+        }))
+    }
+}
+
+tasks.withType<JacocoReport> {
+    afterEvaluate {
+        classDirectories.setFrom(files(classDirectories.files.map {
+            fileTree(it).apply {
+                exclude("com/titanic/hexagonal/core/**")
+                exclude("com/titanic/hexagonal/datastore/component/port/**")
+                exclude("com/titanic/hexagonal/datastore/configuration/**")
+                exclude("com/titanic/hexagonal/datastore/dataprovider/**")
+                exclude("com/titanic/hexagonal/domain/**")
+                exclude("com/titanic/hexagonal/app/**")
+            }
+        }))
+    }
 }
