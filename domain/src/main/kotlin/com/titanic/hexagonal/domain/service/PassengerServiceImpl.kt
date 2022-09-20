@@ -1,11 +1,10 @@
 package com.titanic.hexagonal.domain.service
 
-
+import com.titanic.hexagonal.core.datastore.entity.Passenger
 import com.titanic.hexagonal.datastore.component.port.PassengerDataService
-import com.titanic.hexagonal.datastore.dataprovider.entity.Passenger
-import com.titanic.hexagonal.domain.entity.PassengerDto
 import com.titanic.hexagonal.domain.service.port.PassengerService
-import com.titanic.hexagonal.domain.toDto
+import com.titanic.hexagonal.core.converter.toDto
+import com.titanic.hexagonal.core.domain.entity.PassengerDto
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 import java.util.stream.Collectors

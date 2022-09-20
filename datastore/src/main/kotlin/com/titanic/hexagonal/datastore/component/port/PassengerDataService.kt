@@ -1,6 +1,6 @@
 package com.titanic.hexagonal.datastore.component.port
 
-import com.titanic.hexagonal.datastore.dataprovider.entity.Passenger
+import com.titanic.hexagonal.core.datastore.entity.Passenger
 
 interface PassengerDataService {
     fun findByTicketId(ticketId: Long): Passenger

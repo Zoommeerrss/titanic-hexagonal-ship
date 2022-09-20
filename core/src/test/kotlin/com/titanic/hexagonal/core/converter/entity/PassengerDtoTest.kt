@@ -1,14 +1,15 @@
 package com.titanic.hexagonal.core.converter.entity
 
+import com.titanic.hexagonal.core.domain.entity.PassengerDto
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.Test
 
-internal class PassengerBoTest {
+internal class PassengerDtoTest {
 
     @Test
-    fun `valida BO`() {
+    fun `valida DTO`() {
 
-        val bo = PassengerBo(
+        val bo = PassengerDto(
             1,
             "test",
             1,

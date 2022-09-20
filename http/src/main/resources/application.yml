@@ -23,7 +23,7 @@ spring:
     url: jdbc:postgresql://host.docker.internal:5433/titanicapi
     username: postgres
     password: System20
-    entityPackage: com.titanic.hexagonal.datastore.dataprovider.entity
+    entityPackage: com.titanic.hexagonal.core.datastore.entity
     # JPA properties
   jpa:
     hibernate:

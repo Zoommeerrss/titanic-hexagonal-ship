@@ -1,10 +1,9 @@
 package com.titanic.hexagonal.datastore.component
 
+import com.titanic.hexagonal.core.datastore.entity.Passenger
 import com.titanic.hexagonal.datastore.component.port.PassengerDataService
-import com.titanic.hexagonal.datastore.dataprovider.entity.Passenger
 import com.titanic.hexagonal.datastore.dataprovider.repository.PassengerRepository
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.stereotype.Component
 import org.springframework.stereotype.Service
 
 @Service

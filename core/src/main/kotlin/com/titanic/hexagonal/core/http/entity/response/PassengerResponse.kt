@@ -1,17 +1,16 @@
-package com.titanic.hexagonal.core.converter.entity
+package com.titanic.hexagonal.core.http.entity.response
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 import com.fasterxml.jackson.annotation.JsonInclude
 import com.fasterxml.jackson.annotation.JsonProperty
 
-@JsonIgnoreProperties (
+@JsonIgnoreProperties(
     ignoreUnknown = true
 )
 @JsonInclude(
     JsonInclude.Include.NON_NULL
 )
-data class PassengerDto(
-
+data class PassengerResponse(
     @get:JsonProperty("ticketId")
     val ticketId: Long,
 

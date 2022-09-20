@@ -1,4 +1,4 @@
-package com.titanic.hexagonal.datastore.dataprovider.entity
+package com.titanic.hexagonal.core.datastore.entity
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 import org.hibernate.annotations.GenericGenerator

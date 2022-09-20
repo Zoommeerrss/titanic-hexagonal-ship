@@ -20,13 +20,14 @@ repositories {
 dependencies {
 
     implementation("org.springframework.boot:spring-boot-starter")
+    implementation("org.springframework.boot:spring-boot-starter-data-jpa")
+
+    implementation("org.hibernate:hibernate-core:6.1.2.Final")
 
     testImplementation("org.springframework.boot:spring-boot-starter-test")
 
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
 
-    // projects
-    implementation(project(":datastore"))
 }
 
 apply(plugin = "io.spring.dependency-management")

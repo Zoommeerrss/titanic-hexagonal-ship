@@ -1,9 +1,9 @@
 package com.titanic.hexagonal.app.entrypoint
 
-import com.titanic.hexagonal.domain.entity.PassengerDto
-import com.titanic.hexagonal.domain.entity.PassengerResponse
 import com.titanic.hexagonal.domain.service.port.PassengerService
-import com.titanic.hexagonal.domain.toResponse
+import com.titanic.hexagonal.core.converter.toResponse
+import com.titanic.hexagonal.core.domain.entity.PassengerDto
+import com.titanic.hexagonal.core.http.entity.response.PassengerResponse
 import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity

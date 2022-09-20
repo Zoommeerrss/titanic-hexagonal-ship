@@ -1,6 +1,6 @@
 package com.titanic.hexagonal.datastore.dataprovider.repository
 
-import com.titanic.hexagonal.datastore.dataprovider.entity.Passenger
+import com.titanic.hexagonal.core.datastore.entity.Passenger
 import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.stereotype.Repository
 
