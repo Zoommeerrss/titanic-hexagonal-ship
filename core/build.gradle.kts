@@ -28,6 +28,9 @@ dependencies {
 
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
 
+    //junit 5
+    testImplementation("org.junit.jupiter:junit-jupiter-engine:5.8.2")
+
 }
 
 apply(plugin = "io.spring.dependency-management")

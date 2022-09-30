@@ -28,8 +28,6 @@ allprojects {
 
     println("Project running ${project.name} from ${project.buildDir}")
     apply(plugin = "java")
-    apply(plugin = "info.solidsoft.pitest")
-    apply(plugin = "jacoco")
 
     repositories {
         mavenCentral()
@@ -40,8 +38,6 @@ allprojects {
         // Others
         implementation("org.jetbrains.kotlin:kotlin-reflect")
         implementation(kotlin("script-runtime"))
-
-        implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.6.21")
 
         // pitest
         implementation("info.solidsoft.gradle.pitest:gradle-pitest-plugin:1.7.4")
@@ -54,6 +50,61 @@ allprojects {
 
     }
 
+    tasks.withType<KotlinCompile>() {
+        kotlinOptions.jvmTarget = "11"
+    }
+
+    tasks.withType<KotlinCompile> {
+        kotlinOptions {
+            freeCompilerArgs = listOf("-Xjsr305=strict")
+        }
+    }
+
+    tasks.register<Copy>("movePitestMutations") {
+
+        dependsOn(":datastore:pitest")
+        dependsOn(":domain:pitest")
+        dependsOn(":http:pitest")
+
+        from(rootProject.projectDir.path) {
+            include("reports/pitest/**")
+        }
+        into("${rootProject.projectDir}/build/")
+
+        finalizedBy(":inspectClassesForKotlinIC", ":pitestReportAggregate")
+    }
+
+    tasks.register<Copy>("moveCoreNoPitestMutations") {
+
+        dependsOn(":datastore:pitest")
+        dependsOn(":domain:pitest")
+        dependsOn(":http:pitest")
+
+        from(rootProject.projectDir.path) {
+            include("reports/pitest/**")
+        }
+        into("${project(":core").projectDir}/build/")
+
+        finalizedBy(
+            ":inspectClassesForKotlinIC",
+            ":core:bootJarMainClassName",
+            ":domain:bootJarMainClassName",
+            ":http:bootJarMainClassName",
+            ":http:distTar",
+            ":http:distZip",
+            ":http:startScripts",
+            ":datastore:bootJarMainClassName",
+            ":pitestReportAggregate"
+        )
+    }
+
+}
+
+subprojects {
+
+    apply(plugin = "info.solidsoft.pitest")
+    apply(plugin = "jacoco")
+
     tasks.test {
 
         useJUnitPlatform()
@@ -63,7 +114,7 @@ allprojects {
             classDumpDir = layout.buildDirectory.dir("jacoco/classpathdumps").get().asFile
         }
 
-        finalizedBy( ":moveReports", ":jacocoTestReport")
+        finalizedBy(":jacocoTestReport")
     }
 
     tasks.jacocoTestReport {
@@ -80,39 +131,23 @@ allprojects {
             csv.required.set(false)
         }
 
-        dependsOn(tasks.build)
-    }
-
-    tasks.register<Copy>("moveReports") {
-
-        dependsOn(tasks.check)
-
-        dependsOn(":datastore:pitest")
-        dependsOn(":core:pitest")
-        dependsOn(":domain:pitest")
-        dependsOn(":http:pitest")
-
-        from(project(":http").buildDir) {
-            include("reports/pitest/**")
-        }
-        into("${rootProject.projectDir}/build/")
-
-        finalizedBy(":pitestReportAggregate", ":inspectClassesForKotlinIC")
-    }
-
-    tasks.withType<KotlinCompile>() {
-        kotlinOptions.jvmTarget = "11"
-    }
-
-    tasks.withType<KotlinCompile> {
-        kotlinOptions {
-            freeCompilerArgs = listOf("-Xjsr305=strict")
-        }
+        dependsOn(tasks.test)
     }
 
     pitest {
-        targetClasses.add("com.titanic.hexagonal.*")
-        targetTests.add("com.titanic.hexagonal.*Test")
+
+        // datastore
+        targetClasses.add("com.titanic.hexagonal.datastore.component.*")
+        targetTests.add("com.titanic.hexagonal.datastore.component.*Test")
+
+        // domain
+        targetClasses.add("com.titanic.hexagonal.domain.*")
+        targetTests.add("com.titanic.hexagonal.domain.*Test")
+
+        // http
+        targetClasses.add("com.titanic.hexagonal.app.entrypoint.*")
+        targetTests.add("com.titanic.hexagonal.app.entrypoint.*Test")
+
         testSourceSets.add(sourceSets.test)
         mainSourceSets.add(sourceSets.main)
         jvmArgs.addAll("-Xmx1024m", "-Dspring.test.constructor.autowire.mode=all")
@@ -122,13 +157,10 @@ allprojects {
         timestampedReports.set(false)
         junit5PluginVersion.set("0.15")
         exportLineCoverage.set(true)
-
+        failWhenNoMutations.set(false)
+        avoidCallsTo.add("com.titanic.hexagonal.core")
     }
-}
 
-jacoco {
-
-    toolVersion = "0.8.7"
 }
 
 tasks.test {
@@ -140,24 +172,41 @@ tasks.test {
         classDumpDir = layout.buildDirectory.dir("jacoco/classpathdumps").get().asFile
     }
 
-    finalizedBy( ":jacocoRootReport")
+    finalizedBy(":jacocoTestReport", ":jacocoRootReport", ":movePitestMutations", ":moveCoreNoPitestMutations", ":pitestReportAggregate")
+}
+
+jacoco {
+
+    toolVersion = "0.8.7"
 }
 
 tasks.create<JacocoReport>("jacocoRootReport") {
 
     subprojects {
         val subproject = this
-        subproject.plugins.withType<JacocoPlugin>().configureEach {
-            subproject.tasks.matching { it.extensions.findByType<JacocoTaskExtension>() != null }.configureEach {
-                val testTask = this
-                sourceSets(this@subprojects.the<SourceSetContainer>().named("main").get())
-                executionData(testTask)
-            }
-            subproject.tasks.matching { it.extensions.findByType<JacocoTaskExtension>() != null }.forEach {
-                rootProject.tasks["jacocoTestReport"].dependsOn(it)
+
+        if(!subproject.name.equals("core")) {
+            subproject.plugins.withType<JacocoPlugin>().configureEach {
+                subproject.tasks.matching { it.extensions.findByType<JacocoTaskExtension>() != null }.configureEach {
+                    val testTask = this
+                    sourceSets(this@subprojects.the<SourceSetContainer>().named("test").get())
+                    executionData(testTask)
+                }
+                subproject.tasks.matching { it.extensions.findByType<JacocoTaskExtension>() != null }.forEach {
+                    rootProject.tasks["jacocoTestReport"].dependsOn(it)
+                }
             }
         }
     }
+
+    dependsOn(tasks.jacocoTestReport)
+}
+
+tasks.jacocoTestReport {
+
+    additionalSourceDirs.setFrom(files(sourceSets.main.get().allSource.srcDirs))
+    sourceDirectories.setFrom(files(sourceSets.main.get().allSource.srcDirs))
+    classDirectories.setFrom(files(sourceSets.main.get().output))
 
     reports {
         html.required.set(true)
@@ -166,44 +215,5 @@ tasks.create<JacocoReport>("jacocoRootReport") {
         xml.outputLocation.set(file("${buildDir}/reports/jacoco/jacoco.xml"))
         csv.required.set(false)
     }
-
-    dependsOn(tasks.jacocoTestReport)
 }
 
-tasks.withType<JacocoCoverageVerification> {
-    violationRules {
-        rule {
-            limit {
-                minimum = BigDecimal(0.62)
-            }
-        }
-    }
-
-    afterEvaluate {
-        classDirectories.setFrom(files(classDirectories.files.map {
-            fileTree(it).apply {
-                exclude("com/titanic/hexagonal/core/**")
-                exclude("com/titanic/hexagonal/datastore/component/port/**")
-                exclude("com/titanic/hexagonal/datastore/configuration/**")
-                exclude("com/titanic/hexagonal/datastore/dataprovider/**")
-                exclude("com/titanic/hexagonal/domain/**")
-                exclude("com/titanic/hexagonal/app/**")
-            }
-        }))
-    }
-}
-
-tasks.withType<JacocoReport> {
-    afterEvaluate {
-        classDirectories.setFrom(files(classDirectories.files.map {
-            fileTree(it).apply {
-                exclude("com/titanic/hexagonal/core/**")
-                exclude("com/titanic/hexagonal/datastore/component/port/**")
-                exclude("com/titanic/hexagonal/datastore/configuration/**")
-                exclude("com/titanic/hexagonal/datastore/dataprovider/**")
-                exclude("com/titanic/hexagonal/domain/**")
-                exclude("com/titanic/hexagonal/app/**")
-            }
-        }))
-    }
-}
