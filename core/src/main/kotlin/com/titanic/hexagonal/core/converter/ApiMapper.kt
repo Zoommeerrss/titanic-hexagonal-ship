@@ -12,8 +12,8 @@ fun PassengerRequest.toDto(): PassengerDto = PassengerDto(
 )
 
 fun PassengerDto.toResponse(): PassengerResponse = PassengerResponse(
-    ticketId = this.ticketId,
-    name = this.name,
-    classDesc = this.classDesc,
-    floorLevel = this.floorLevel
+    ticketId = this.ticketId!!,
+    name = this.name!!,
+    classDesc = this.classDesc!!,
+    floorLevel = this.floorLevel!!
 )

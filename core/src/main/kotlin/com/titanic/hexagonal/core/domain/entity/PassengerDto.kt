@@ -13,14 +13,14 @@ import com.fasterxml.jackson.annotation.JsonProperty
 data class PassengerDto(
 
     @get:JsonProperty("ticketId")
-    val ticketId: Long,
+    var ticketId: Long?,
 
     @get:JsonProperty("name")
-    val name: String,
+    var name: String?,
 
     @get:JsonProperty("classDesc")
-    val classDesc: Long,
+    var classDesc: Long?,
 
     @get:JsonProperty("floorLevel")
-    val floorLevel: Long
+    var floorLevel: Long?
 )

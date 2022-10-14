@@ -15,10 +15,6 @@ import org.springframework.context.annotation.PropertySources
 @SpringBootApplication
 @EnableAutoConfiguration(exclude=[ DataSourceAutoConfiguration::class])
 @ComponentScan(basePackages = arrayOf("com.titanic.hexagonal.datastore", "com.titanic.hexagonal.core", "com.titanic.hexagonal.domain", "com.titanic.hexagonal.app"))
-@PropertySources(
-    PropertySource(value = ["classpath:/application.yml"], ignoreResourceNotFound = true),
-    PropertySource(value = ["classpath:/application-datastore.yml"], ignoreResourceNotFound = true)
-)
 @OpenAPIDefinition(
     info = Info(
         title = "Titanic Hexagonal Ship",

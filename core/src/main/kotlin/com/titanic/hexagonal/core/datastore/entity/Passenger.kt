@@ -1,7 +1,6 @@
 package com.titanic.hexagonal.core.datastore.entity
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties
-import org.hibernate.annotations.GenericGenerator
 import java.io.Serializable
 import javax.persistence.*
 
@@ -13,17 +12,16 @@ import javax.persistence.*
 data class Passenger(
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO, generator = "native")
-    @GenericGenerator(name = "native", strategy = "native")
     @Column(name = "ticketId", insertable = false, updatable = false, nullable = false)
-    val ticketId: Long,
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    val ticketId: Long?,
 
     @Column(name = "name", nullable = false)
-    val name: String,
+    val name: String?,
 
     @Column(name = "classDesc", nullable = false)
-    val classDesc: Long,
+    val classDesc: Long?,
 
     @Column(name = "floorLevel", nullable = false)
-    val floorLevel: Long
+    val floorLevel: Long?
 ): Serializable

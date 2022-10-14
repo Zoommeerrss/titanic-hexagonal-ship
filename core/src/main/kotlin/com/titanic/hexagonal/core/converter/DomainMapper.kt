@@ -11,8 +11,8 @@ fun PassengerDto.toEntity(): Passenger = Passenger(
 )
 
 fun Passenger.toDto(): PassengerDto = PassengerDto(
-    ticketId = this.ticketId,
-    name = this.name,
-    classDesc = this.classDesc,
-    floorLevel = this.floorLevel
+    ticketId = this.ticketId!!,
+    name = this.name!!,
+    classDesc = this.classDesc!!,
+    floorLevel = this.floorLevel!!
 )

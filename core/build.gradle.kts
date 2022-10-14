@@ -6,6 +6,8 @@ plugins {
     id("io.spring.dependency-management") version "1.0.12.RELEASE"
     kotlin("jvm")
     kotlin("plugin.spring")
+    kotlin("plugin.jpa")
+    kotlin("plugin.allopen")
     jacoco
 }
 
@@ -46,6 +48,12 @@ the<io.spring.gradle.dependencymanagement.dsl.DependencyManagementExtension>().a
     imports {
         mavenBom(org.springframework.boot.gradle.plugin.SpringBootPlugin.BOM_COORDINATES)
     }
+}
+
+allOpen {
+    annotation("javax.persistence.Entity")
+    annotation("javax.persistence.Embeddable")
+    annotation("javax.persistence.MappedSuperclass")
 }
 
 tasks.getByName<org.springframework.boot.gradle.tasks.bundling.BootJar>("bootJar") {

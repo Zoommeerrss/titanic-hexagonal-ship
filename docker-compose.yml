@@ -9,7 +9,7 @@ services:
     environment:
       POSTGRES_DB: titanicapi
       POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: System20
+        POSTGRES_PASSWORD: System20
     volumes:
       - db-postgres:/var/lib/postgresql/data
 

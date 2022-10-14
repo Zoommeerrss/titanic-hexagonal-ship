@@ -19,6 +19,10 @@ class PassengerServiceImpl: PassengerService {
         return passengerDataService.findByTicketId(ticketId).toDto()
     }
 
+    override fun existsByTicketId(ticketId: Long): Boolean {
+        return passengerDataService.existsByTicketId(ticketId)
+    }
+
     override fun findAll(): List<PassengerDto> {
         return passengerDataService.findAll()
             .stream()
