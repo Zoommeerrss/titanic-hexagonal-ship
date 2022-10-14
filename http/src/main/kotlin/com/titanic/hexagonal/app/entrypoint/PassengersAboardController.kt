@@ -35,9 +35,10 @@ class PassengersAboardController(
     @ApiResponses(
         value = [
             ApiResponse(responseCode = "200", description = "Successful Operation"),
-            ApiResponse(responseCode = "403", description = "Such a car does not exist"),
+            ApiResponse(responseCode = "403", description = "Access Forbidden"),
             ApiResponse(responseCode = "404", description = "Bad Request"),
             ApiResponse(responseCode = "500", description = "Internal Server Error"),
+            ApiResponse(responseCode = "503", description = "Unknown Application Error"),
         ]
     )
     @GetMapping(value = ["/passengers"], produces = [MediaType.APPLICATION_JSON_VALUE])
@@ -55,9 +56,10 @@ class PassengersAboardController(
     @ApiResponses(
         value = [
             ApiResponse(responseCode = "200", description = "Successful Operation"),
-            ApiResponse(responseCode = "403", description = "Such a car does not exist"),
+            ApiResponse(responseCode = "403", description = "Access Forbidden"),
             ApiResponse(responseCode = "404", description = "Bad Request"),
             ApiResponse(responseCode = "500", description = "Internal Server Error"),
+            ApiResponse(responseCode = "503", description = "Unknown Application Error"),
         ]
     )
     @GetMapping(value = ["/passengers/existsByTicketId/{ticketId}"], produces = [MediaType.APPLICATION_JSON_VALUE])
@@ -77,9 +79,10 @@ class PassengersAboardController(
     @ApiResponses(
         value = [
             ApiResponse(responseCode = "200", description = "Successful Operation"),
-            ApiResponse(responseCode = "403", description = "Such a car does not exist"),
+            ApiResponse(responseCode = "403", description = "Access Forbidden"),
             ApiResponse(responseCode = "404", description = "Bad Request"),
             ApiResponse(responseCode = "500", description = "Internal Server Error"),
+            ApiResponse(responseCode = "503", description = "Unknown Application Error"),
         ]
     )
     @GetMapping(value = ["/passengers/byTicketId/{ticketId}"], produces = [MediaType.APPLICATION_JSON_VALUE])
