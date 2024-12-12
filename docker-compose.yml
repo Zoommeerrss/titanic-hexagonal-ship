@@ -1,4 +1,4 @@
-version: "3.0"
+version: "3.8"
 
 services:
   db-postgres-titanic:
@@ -9,10 +9,10 @@ services:
     environment:
       POSTGRES_DB: titanicapi
       POSTGRES_USER: postgres
-        POSTGRES_PASSWORD: System20
+      POSTGRES_PASSWORD: System20
     volumes:
-      - db-postgres:/var/lib/postgresql/data
+      - db-postgres-titanic:/var/lib/postgresql/data
 
 volumes:
-  db-postgres:
+  db-postgres-titanic:
     driver: local
